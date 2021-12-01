@@ -1,0 +1,56 @@
+{
+    "anonymous" : {
+        "priviliges" : [
+            "watch",
+            "like",
+            "comment"
+        ]
+    },
+    "authenticated" : {
+        "priviliges" : [
+            "watch",
+            "like",
+            "comment",
+            "delete own comment",
+            "edit own comment",
+            "edit own profile"
+        ]
+    },
+    "contentCreator" : {
+        "priviliges" : [
+            "watch",
+            "like",
+            "comment",
+            "delete own comment",
+            "edit own comment",
+            "edit own profile",
+            "upload",
+            "edit own uploads",
+            "delete own uploads",
+            "create own channel",
+            "edit own channel",
+            "delete own channel"
+        ]
+    },
+    "moderator" : {
+        "priviliges" : [
+            "watch",
+            "like",
+            "comment",
+            "delete any comment",
+            "close profile",
+            "close video",
+            "close channel",
+            "review profile",
+            "review video",
+            "review channel",
+            "edit theme"
+            
+        ]
+    },
+    "admin" : {
+        "priviliges" : [
+            "*"
+        ]
+    }
+}
