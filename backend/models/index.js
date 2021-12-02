@@ -43,6 +43,8 @@ db.comments.belongsTo(db.users);
 db.videos.hasMany(db.comments);
 db.comments.belongsTo(db.videos);
 
+db.comments.hasMany(db.comments, {as: "replies"});
+
 db.users.hasMany(db.channels);
 db.channels.belongsTo(db.users);
 
@@ -59,12 +61,12 @@ db.categories.channelsToWatch = db.categories.belongsToMany(db.channels, {
 });
 
 
-db.videos.hashTags = db.videos.belongsToMany(db.tags, {
-    through: "video_tags",
-    foreignKey: "tags",
-    as: "hash_tags"
+db.videos.belongsToMany(db.tags, {
+    through: "videoTags"
 });
-
+db.tags.belongsToMany(db.videos, {
+    through: "videoTags"
+});
 
 
 module.exports = db;

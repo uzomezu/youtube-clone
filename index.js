@@ -24,7 +24,6 @@ client.prepare().then(()=>{
         if(dev) {
             console.log("Dropping and Re-Syncing the DB...")
         }
-
         server.listen(port, ()=>{
             console.log("Server Listening on PORT: ", port)
         })

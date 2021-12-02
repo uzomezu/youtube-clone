@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Videos = sequelize.define("videos", {
+    const Videos = sequelize.define("video", {
         title: {
             type: Sequelize.STRING, 
             allowNull:false,
