@@ -1,5 +1,6 @@
-const config = require('../config/config');
+const config = require('../config');
 const Sequelize = require("sequelize");
+
 
 const sequelize = new Sequelize(
     config.db.SCHEMA,
@@ -25,5 +26,45 @@ const db = {};
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
+
+db.users = require('./users.model')(sequelize, Sequelize);
+db.videos = require('./videos.model')(sequelize, Sequelize);
+db.comments = require('./comments.model')(sequelize, Sequelize);
+db.tags = require("./tags.model")(sequelize, Sequelize);
+db.channels = require('./channels.model')(sequelize, Sequelize);
+db.categories = require('./categories.model')(sequelize, Sequelize);
+// Relations: 
+
+// The following relations show the structure for the database
+
+db.users.hasMany(db.comments); 
+db.comments.belongsTo(db.users);
+
+db.videos.hasMany(db.comments);
+db.comments.belongsTo(db.videos);
+
+db.users.hasMany(db.channels);
+db.channels.belongsTo(db.users);
+
+db.users.hasMany(db.videos);
+db.videos.belongsTo(db.users);
+
+db.channels.hasMany(db.videos);
+db.videos.belongsTo(db.channels);
+
+db.categories.channelsToWatch = db.categories.belongsToMany(db.channels, {
+    through: "channels_in_category",
+    foreignKey: "channels",
+    as: "channels_to_watch"
+});
+
+
+db.videos.hashTags = db.videos.belongsToMany(db.tags, {
+    through: "video_tags",
+    foreignKey: "tags",
+    as: "hash_tags"
+});
+
+
 
 module.exports = db;
