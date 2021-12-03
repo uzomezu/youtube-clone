@@ -13,6 +13,12 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             unique: true
         },
+        firstName: {
+            type: Sequelize.STRING,
+        },
+        lastName: {
+            type: Sequelize.STRING,
+        },
         password: {
             type: Sequelize.STRING,
             allowNull: false,
@@ -64,13 +70,7 @@ module.exports = (sequelize, Sequelize) => {
         const {email, username, password} = req.body;
         
         // ... Validate the incoming data
-
-        // ... hash password and make a new user
-        const newUser = await Users.create({
-            email: email,
-            username: username,
-
-        })
+        
     };
    
     /**

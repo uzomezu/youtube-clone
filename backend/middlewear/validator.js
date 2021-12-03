@@ -1,4 +1,8 @@
 const tlds = require('./tlds.json');
+var capitals = /[A-Z]/;
+var lowerCase = /[a-z]/;
+var numbers = /[0-9]/;
+var specialChars = /[!@#$%^&*?.;:,<>~]/;
 exports.validEmail = (email) => {
     const emailRegex = (tlds) => {
         let str = "[a-z0-9]+@[a-z.]" + "'+\'"
@@ -34,10 +38,57 @@ exports.validEmail = (email) => {
 };
 
 exports.validUsername = (username) => {
+    let errors = [];
+    let color = "";
+    if (!capitals.test(username)){
+        errors.push("usernames must contain at least one uppercase character.");
+    }
+    if (!lowerCase.test(username)){
+        errors.push("usernames must contain at least one lowercase character.");
+    }
+    if (!numbers.test(username)){
+        errors.push("usernames must contain at least 1 number (0-9).")
+    };
+    if (errors.length > 0) {
+        color = "red"
+    } else {
+        color = "green"
+    };
 
+    return {
+        errors: errors,
+        color: color
+    }
 };
 
 exports.validPassword = (password) => {
+    let errors = [];
+    let color = "";
 
+    if (password.length < 8) {
+        errors.push("passwords must be at least 8 characters long.")
+    } 
+    if (!capitals.test(password)){  
+        errors.push("passwords must contain a uppercase character.")
+    }
+    if (!lowerCase.test(password)){
+        errors.push("passwords must contain a lowercase character.")
+    }
+    if (!numbers.test(password)){
+        errors.push("passwords must contain at least one number (0-9).") 
+    }
+    if (!specialChars.test(password)){
+        errors.push("passwords must contain a special character.")
+    }
+    if (errors.length > 0) {
+        color = "red"
+    } else {
+        color = "green"
+    }
+
+    return {
+        errors: errors,
+        color: color
+    }
 }
 
