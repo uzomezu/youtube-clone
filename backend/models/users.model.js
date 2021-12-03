@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../config/');
+const {validUsername, validEmail, validPassword} = require("../middlewear/validator");
 module.exports = (sequelize, Sequelize) => {
     const Users = sequelize.define("user", {
         email : {
@@ -65,12 +66,47 @@ module.exports = (sequelize, Sequelize) => {
     };
     // ... register function which will create a user
     Users.register = async (req,res,next) => {
-        // grab data from req.body;
+        try {
+            // grab data from req.body;
 
-        const {email, username, password} = req.body;
-        
-        // ... Validate the incoming data
-        
+            const {email, username, password} = req.body;
+            
+            // ... Validate the incoming data
+            
+            const isValidEmail = validEmail(email);
+            const isValidUserName = validUsername(username);
+            const isValidPassword = validPassword(password);
+            const response = {
+                email: isValidEmail ? "Email is valid!" : "Error: Invalid email address.",
+                username : isValidUserName,
+                password : isValidPassword 
+            };
+            if (!isValidEmail || isValidUserName.errors.length > 0 || isValidPassword.errors.length > 0){
+                // ... send back the errors
+                res.status(400).send(response);
+            } else {
+                // ... all conditions validated
+                var salt = bcrypt.genSaltSync(10);
+                var hashedPass = bcrypt.hashSync(password, salt);
+
+                const newUser = await Users.create({
+                    email: email,
+                    username: username,
+                    password: hashedPass
+                });
+
+                if (newUser) {
+                    res.status(201).send({
+                        message: "Success! New user was registered.",
+                        user: newUser
+                    })
+                }
+            }
+            
+        } catch (err) {
+            res.status(500).send({message: err.message});
+        }
+
     };
    
     /**
