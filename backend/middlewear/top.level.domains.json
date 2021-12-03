@@ -1,0 +1,55 @@
+{
+    "tlds" : 
+    {
+        "most_common" : [
+            ".com",
+            ".int",
+            ".edu",
+            ".net",
+            ".org",
+            ".de",
+            ".arpa",
+            ".gov",
+            ".mil",
+            ".icu",
+            ".uk",
+            ".ru",
+            ".info",
+            ".top",
+            ".xyz",
+            ".tk",
+            ".cn",
+            ".ga",
+            ".cf",
+            ".nl"
+        ],
+        "less_common" : [
+            ".fr",
+            ".co.uk",
+            ".ca",
+            ".jp",
+            ".ac.jp",
+            ".ad.jp" ,
+            ".co.jp" ,
+            ".ed.jp", 
+            ".go.jp" ,
+            ".gr.jp", 
+            ".lg.jp" ,
+            ".ne.jp" ,
+            ".or.jp"
+        ],
+        "avoid" : [
+            ".live",	
+            ".buzz",	
+            ".gq",	
+            ".tk",	
+            ".fit",	
+            ".cf",
+            ".ga",	
+            ".ml",
+            ".wang",	
+            ".top"	
+        ]
+        
+    } 
+}

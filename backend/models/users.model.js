@@ -1,4 +1,6 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('../config/');
 module.exports = (sequelize, Sequelize) => {
     const Users = sequelize.define("user", {
         email : {
@@ -49,6 +51,64 @@ module.exports = (sequelize, Sequelize) => {
         } else {
             return {message: "Error authenticating user."}
         }
-    }
+    };
+    // User Controllers: I will be using the User Model to house the controllers for this app. 
+    // ... Log in Function which issues a jwt
+    Users.logIn = async (req,res,next) => {
+
+    };
+    // ... register function which will create a user
+    Users.register = async (req,res,next) => {
+        // grab data from req.body;
+
+        const {email, username, password} = req.body;
+        
+        // ... Validate the incoming data
+
+        // ... hash password and make a new user
+        const newUser = await Users.create({
+            email: email,
+            username: username,
+
+        })
+    };
+   
+    /**
+     * Will validate an authenticated user from db
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    Users.isAuth = async (req,res,next) => {
+
+    };
+    /**
+     * Will validate a content creator user from db
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    Users.isContentCreator = async (req,res,next) => {
+
+    };
+    /**
+     * Will validate moderator from db
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    Users.isModerator = async (req,res,next) => {
+
+    };
+    /**
+     * Will highest level user role validation from db
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    Users.isAdmin = async (req,res,next) => {
+
+    };
+
     return Users;
 }
