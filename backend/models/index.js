@@ -28,6 +28,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.users = require('./users.model')(sequelize, Sequelize);
+db.roles = require('./roles.model')(sequelize, Sequelize);
 db.videos = require('./videos.model')(sequelize, Sequelize);
 db.comments = require('./comments.model')(sequelize, Sequelize);
 db.tags = require("./tags.model")(sequelize, Sequelize);
@@ -36,6 +37,13 @@ db.categories = require('./categories.model')(sequelize, Sequelize);
 // Relations: 
 
 // The following relations show the structure for the database
+
+db.users.belongsToMany(db.roles, {
+    through: "priviliges"
+});
+db.roles.belongsToMany(db.users, {
+    through: "priviliges"
+});
 
 db.users.hasMany(db.comments); 
 db.comments.belongsTo(db.users);
