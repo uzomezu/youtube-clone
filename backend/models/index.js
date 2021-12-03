@@ -1,5 +1,7 @@
 const config = require('../config');
 const Sequelize = require("sequelize");
+const { Model } = require('sequelize');
+
 
 
 const sequelize = new Sequelize(
@@ -45,16 +47,32 @@ db.roles.belongsToMany(db.users, {
     through: "priviliges"
 });
 
+db.users.belongsToMany(db.users, {
+    as: {singular: "follower", plural: "followers"},
+    through: "following"
+});
+
 db.users.hasMany(db.comments); 
 db.comments.belongsTo(db.users);
+
+db.comments.belongsToMany(db.comments, {
+    as: {singular: "reply", plural: "replies"},
+    through: "thread"
+});
 
 db.videos.hasMany(db.comments);
 db.comments.belongsTo(db.videos);
 
-db.comments.hasMany(db.comments, {as: "replies"});
-
 db.users.hasMany(db.channels);
 db.channels.belongsTo(db.users);
+
+db.users.belongsToMany(db.channels, {
+    as: {singular: "subscriber", plural: "subscribers"},
+    through: "subscriptions"
+});
+db.channels.belongsToMany(db.users,{
+    through: "subscriptions"
+})
 
 db.users.hasMany(db.videos);
 db.videos.belongsTo(db.users);
@@ -62,12 +80,12 @@ db.videos.belongsTo(db.users);
 db.channels.hasMany(db.videos);
 db.videos.belongsTo(db.channels);
 
-db.categories.channelsToWatch = db.categories.belongsToMany(db.channels, {
-    through: "channels_in_category",
-    foreignKey: "channels",
-    as: "channels_to_watch"
+db.categories.belongsToMany(db.channels, {
+    through: "genres"
 });
-
+db.channels.belongsToMany(db.categories, {
+    through: "genres"
+});
 
 db.videos.belongsToMany(db.tags, {
     through: "videoTags"
