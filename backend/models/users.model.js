@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../config/');
+const userRolesJSON = require('../user.roles.json');
 const {validUsername, validEmail, validPassword} = require("../middlewear/validator");
+const db = require('./index');
 module.exports = (sequelize, Sequelize) => {
     const Users = sequelize.define("user", {
         email : {
@@ -59,9 +61,37 @@ module.exports = (sequelize, Sequelize) => {
             return {message: "Error authenticating user."}
         }
     };
-    // User Controllers: I will be using the User Model to house the controllers for this app. 
+    
     // ... Log in Function which issues a jwt
     Users.logIn = async (req,res,next) => {
+        try {
+            const {identifier, password} = req.body;
+            const user = await Users.authenitcate(identifier, password);
+
+            if (user instanceof Users) {
+                // ... respond with JWT
+                const token = jwt.sign({
+                    id: user.id,
+                    roles: await user.getRoles(),
+                    email: user.email
+                },config.JWT_SECRET,{
+                    expiresIn: "72h" // 72 hour expiration time
+                });
+
+                res.status(200).send({
+                    user: user,
+                    token: token
+                })
+            } else {
+
+                var error = user;
+                res.status(400).send({
+                    error
+                })
+            }
+        } catch (err) {
+            res.status(500).send({message: err.message})
+        }
 
     };
     // ... register function which will create a user
@@ -94,13 +124,27 @@ module.exports = (sequelize, Sequelize) => {
                     username: username,
                     password: hashedPass
                 });
-
-                if (newUser) {
-                    res.status(201).send({
-                        message: "Success! New user was registered.",
-                        user: newUser
-                    })
+               
+                // ... add the authenticated roles
+                //const authRole = userRolesJSON.authenticated.priviliges;
+                const authRole = await db.roles.findOne({where:{
+                    name : "authenticated"
+                }});
+                if(!authRole){
+                    const newRole = await db.roles.create({
+                        name: "authenticated"
+                    });
+                    await newUser.addRole(newRole);
+                } else {
+                    await newUser.addRole(authRole);
                 }
+                res.status(201).send({
+                    message: "Success! New user created.",
+                    data: {
+                        user: newUser,
+                        roles: await newUser.getRoles()
+                    }
+                });
             }
             
         } catch (err) {

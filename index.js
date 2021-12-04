@@ -20,10 +20,12 @@ client.prepare().then(()=>{
     const port = config.PORT || '';
 
 
-    db.sequelize.sync({force: dev }).then(()=>{
+    db.sequelize.sync({force: dev }).then(async ()=>{
         if(dev) {
-            console.log("Dropping and Re-Syncing the DB...")
+            console.log("Dropping and Re-Syncing the DB ...")
         }
+        // ... initialize roles
+        // db.initRoles();
         server.listen(port, ()=>{
             console.log("Server Listening on PORT: ", port)
         })

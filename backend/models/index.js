@@ -1,6 +1,6 @@
 const config = require('../config');
 const Sequelize = require("sequelize");
-const { Model } = require('sequelize');
+const userRolesJSON = require('../user.roles.json');
 
 
 
@@ -94,5 +94,21 @@ db.tags.belongsToMany(db.videos, {
     through: "videoTags"
 });
 
+// ... initialize user roles
+
+db.initRoles = () => {
+    const allPrivileges = userRolesJSON.allPriviliges;
+
+    for (const role of allPrivileges) {
+        const newRole = await db.roles.create({
+            name: role
+        });
+        if (newRole) {
+            console.log("new userRole has been created: ", newRole);
+        }
+    };
+
+    return;
+}
 
 module.exports = db;
