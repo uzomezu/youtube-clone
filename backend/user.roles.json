@@ -8,9 +8,6 @@
     },
     "authenticated" : {
         "priviliges" : [
-            "watch",
-            "like",
-            "comment",
             "delete own comment",
             "edit own comment",
             "edit own profile"
@@ -18,12 +15,6 @@
     },
     "contentCreator" : {
         "priviliges" : [
-            "watch",
-            "like",
-            "comment",
-            "delete own comment",
-            "edit own comment",
-            "edit own profile",
             "upload",
             "edit own uploads",
             "delete own uploads",
@@ -34,9 +25,6 @@
     },
     "moderator" : {
         "priviliges" : [
-            "watch",
-            "like",
-            "comment",
             "delete any comment",
             "close profile",
             "close video",

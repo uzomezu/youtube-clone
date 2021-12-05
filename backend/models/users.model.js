@@ -4,6 +4,7 @@ const config = require('../config/');
 const userRolesJSON = require('../user.roles.json');
 const {validUsername, validEmail, validPassword} = require("../middlewear/validator");
 const db = require('./index');
+const e = require('cors');
 module.exports = (sequelize, Sequelize) => {
     const Users = sequelize.define("user", {
         email : {
@@ -70,9 +71,20 @@ module.exports = (sequelize, Sequelize) => {
 
             if (user instanceof Users) {
                 // ... respond with JWT
+
+                const curUserRoles = await user.getRoles();
+
+                let priviliges = [];
+
+                for (const role of curUserRoles) {
+                    var thingsICanDo = userRolesJSON[role.name].priviliges;
+
+                    priviliges.concat(thingsICanDo);
+                }
+
                 const token = jwt.sign({
                     id: user.id,
-                    roles: await user.getRoles(),
+                    priviliges: priviliges,
                     email: user.email
                 },config.JWT_SECRET,{
                     expiresIn: "72h" // 72 hour expiration time
@@ -152,7 +164,57 @@ module.exports = (sequelize, Sequelize) => {
         }
 
     };
-   
+    /**
+     * creates or finds a current user privilige
+     * @param {String} roleName 
+     * @returns UserRole Object
+     */
+    Users.newPrivilige = async (roleName) => {
+
+        const checkForRole = await db.roles.findOne({where:{
+            name: roleName
+        }});
+
+        if (!checkForRole){
+            const newRole = await db.roles.create({
+                name: roleName
+            });
+
+            if (newRole) {
+                return newRole
+            };
+        } else {
+            return checkForRole;
+        }
+
+    }
+    Users.becomePriviliged = async (req,res,next) => {
+        try{
+            const userRole = await Users.newPrivilige(req.body.privilige);
+        
+            // assuming isAuth (user has a jwt during request)
+    
+            const user = req.user;
+    
+            const userPriviliges = await user.getRoles();
+    
+            if (!userPriviliges.includes(userRole)) {
+                await user.addRole(userRole);
+                res.status(200).send({
+                    message: `${req.body.privilige} privilige added!`,
+                    roles: await user.getRoles()
+                })
+            } else {
+                await user.removeRole(userRole);
+                res.status(200).send({
+                        message: `${req.body.privilige} privilige removed.`,
+                        roles : await user.getRoles()
+                    });
+            }
+        } catch(err) {
+            res.status(500).send({message: err.message})
+        }
+    };
     /**
      * Will validate an authenticated user from db
      * @param {*} req 
@@ -160,35 +222,26 @@ module.exports = (sequelize, Sequelize) => {
      * @param {*} next 
      */
     Users.isAuth = async (req,res,next) => {
+        try{
+            const bearerToken = req.headers.authorization;
+            const onlyToken = bearerToken.slice(7,bearerToken.length);
+            jwt.verify(onlyToken, config.JWT_SECRET, async(err, decoded)=>{
+                if (err){
+                    throw err
+                } else {
+                    req.user = await Users.findOne({where: {
+                        id: decoded.id
+                    }});
+                    req.priviliges = decoded.priviliges
+                    next();
+                    return;
+                }
+            })
+        } catch(err){
+            res.status(500).send({message: err.message})
+        }
+
 
     };
-    /**
-     * Will validate a content creator user from db
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
-     */
-    Users.isContentCreator = async (req,res,next) => {
-
-    };
-    /**
-     * Will validate moderator from db
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
-     */
-    Users.isModerator = async (req,res,next) => {
-
-    };
-    /**
-     * Will highest level user role validation from db
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
-     */
-    Users.isAdmin = async (req,res,next) => {
-
-    };
-
     return Users;
 }
