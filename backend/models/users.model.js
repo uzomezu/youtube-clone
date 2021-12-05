@@ -25,7 +25,6 @@ module.exports = (sequelize, Sequelize) => {
         password: {
             type: Sequelize.STRING,
             allowNull: false,
-
         },
         image: {
             type: Sequelize.STRING,
@@ -118,7 +117,7 @@ module.exports = (sequelize, Sequelize) => {
             const isValidUserName = validUsername(username);
             const isValidPassword = validPassword(password);
             const response = {
-                email: isValidEmail ? "Email is valid!" : "Error: Invalid email address.",
+                email: isValidEmail == true ? "Email is valid!" : "Error: Invalid email address.",
                 username : isValidUserName,
                 password : isValidPassword 
             };
@@ -137,17 +136,11 @@ module.exports = (sequelize, Sequelize) => {
                 });
                
                 // ... add the authenticated roles
-                //const authRole = userRolesJSON.authenticated.priviliges;
-                const authRole = await db.roles.findOne({where:{
-                    name : "authenticated"
-                }});
-                if(!authRole){
-                    const newRole = await db.roles.create({
-                        name: "authenticated"
-                    });
-                    await newUser.addRole(newRole);
-                } else {
-                    await newUser.addRole(authRole);
+                const authRole = await db.roles.newPrivilige("authenticated");
+                await newUser.addRole(authRole);
+                if(newUser.id == 1) {
+                    const adminPrivilige = await db.roles.newPrivilige("admin");
+                    await newUser.addRole(adminPrivilige);
                 }
                 res.status(201).send({
                     message: "Success! New user created.",
@@ -163,33 +156,10 @@ module.exports = (sequelize, Sequelize) => {
         }
 
     };
-    /**
-     * creates or finds a current user privilige
-     * @param {String} roleName 
-     * @returns UserRole Object
-     */
-    Users.newPrivilige = async (roleName) => {
 
-        const checkForRole = await db.roles.findOne({where:{
-            name: roleName
-        }});
-
-        if (!checkForRole){
-            const newRole = await db.roles.create({
-                name: roleName
-            });
-
-            if (newRole) {
-                return newRole
-            };
-        } else {
-            return checkForRole;
-        }
-
-    }
     Users.becomePriviliged = async (req,res,next) => {
         try{
-            const userRole = await Users.newPrivilige(req.body.privilige);
+            const userRole = await db.roles.newPrivilige(req.body.privilige);
         
             // assuming isAuth (user has a jwt during request)
     
@@ -240,6 +210,22 @@ module.exports = (sequelize, Sequelize) => {
             res.status(500).send({message: err.message})
         }
     };
+    Users.isAdmin = async (req,res,next) => {
+        try{
+            if (req.priviliges && req.user) {
+                if(req.priviliges.includes("*")){
+                    next();
+                    return;
+                } else {
+                    res.status(403).send({message: "Error: Unauthorized access."});
+                }
+            } else {
+                res.status(403).send({message: "Error: Unauthorized access."})
+            }
+        } catch(err) {
+            res.status(500).send({message: err.message})
+        }
+    }
     Users.getMe = async (req,res,next) => {
         try {   
             if (req.user) {
@@ -247,6 +233,16 @@ module.exports = (sequelize, Sequelize) => {
             } else {
                 res.status(403).send({message: "Error: User unauthorized or does not exist."});
             }
+        } catch(err) {
+            res.status(500).send({message: err.message});
+        }
+    }
+    Users.getAll = async (req,res,next) => {
+        try {
+            const allUsers = await Users.findAll();
+            if (allUsers) {
+                res.statsu(200).send(allUsers);
+            } 
         } catch(err) {
             res.status(500).send({message: err.message});
         }

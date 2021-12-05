@@ -96,7 +96,7 @@ db.tags.belongsToMany(db.videos, {
 
 // ... initialize user roles
 
-db.initRoles = () => {
+db.initRoles = async () => {
     const allPrivileges = userRolesJSON.allPriviliges;
 
     for (const role of allPrivileges) {

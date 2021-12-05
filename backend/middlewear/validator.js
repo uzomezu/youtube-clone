@@ -5,7 +5,7 @@ var numbers = /[0-9]/;
 var specialChars = /[!@#$%^&*?.;:,<>~]/;
 exports.validEmail = (email) => {
     const emailRegex = (tlds) => {
-        let str = "[a-z0-9]+@[a-z.]" + "'+\'"
+        let str = "^[^\s@]+@[^\s@]+\."
         
         for (let i = 0; i < tlds.length; i++) {
             if (i == 0) {
