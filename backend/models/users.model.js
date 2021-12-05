@@ -4,7 +4,6 @@ const config = require('../config/');
 const userRolesJSON = require('../user.roles.json');
 const {validUsername, validEmail, validPassword} = require("../middlewear/validator");
 const db = require('./index');
-const e = require('cors');
 module.exports = (sequelize, Sequelize) => {
     const Users = sequelize.define("user", {
         email : {
@@ -240,8 +239,40 @@ module.exports = (sequelize, Sequelize) => {
         } catch(err){
             res.status(500).send({message: err.message})
         }
-
-
     };
+    Users.getMe = async (req,res,next) => {
+        try {   
+            if (req.user) {
+                res.status(200).send(req.user);
+            } else {
+                res.status(403).send({message: "Error: User unauthorized or does not exist."});
+            }
+        } catch(err) {
+            res.status(500).send({message: err.message});
+        }
+    }
+    Users.upDateName = async (req,res,next) => {
+        try {
+            if(req.user) {
+                const updatedUser = await Users.update({
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName
+                },{
+                    where: {
+                        id: req.user.id
+                    }
+                });
+
+                if(updatedUser){
+                    res.status(200).send({
+                        message: "first and last names updated!",
+                        user: updatedUser
+                    });
+                }
+            }
+        } catch(err) {
+            res.status(500).send({message: err.message})
+        }
+    }
     return Users;
 }
