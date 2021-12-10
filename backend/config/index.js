@@ -1,4 +1,5 @@
 require('dotenv').config();
+const gmailJSON = require('../../client_secrect_kev_portfolio.json');
 
 module.exports = {
     JWT_SECRET : process.env.JWT_SECRET,
@@ -19,5 +20,12 @@ module.exports = {
             idle : 10000 ,
             acquire : 30000 
         }
+    },
+    gmail: {
+        CLIENT_ID: process.env.GMAIL_CLIENT_ID,
+        CLIENT_SECRET: process.env.GMAIL_CLIENT_SECRET,
+        REFRESH_TOKEN: process.env.GMAIL_REFRESH_TOKEN,
+        REDIRECT_URIS: gmailJSON.web.redirect_uris,
+        ROOT_USER: process.env.GMAIL_ROOT_USER || "uzomezu@gmail.com"
     }
 }

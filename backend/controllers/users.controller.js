@@ -4,6 +4,7 @@ const config = require('../config/');
 const userRolesJSON = require('../user.roles.json');
 const {validUsername, validEmail, validPassword} = require("../middlewear/validator");
 const db = require("../models/");
+const mailer = require('../middlewear/mailer');
 exports.authenitcate = async function(identifier, password){
     
     const checkEmail = await db.users.findOne({where: {
@@ -242,4 +243,16 @@ exports.upDateName = async (req,res,next) => {
     } catch(err) {
         res.status(500).send({message: err.message})
     }
+}
+
+
+// Email Confirmation and Password Reset
+
+exports.emailConfirmation = async (req,res,next) => {
+    const userId = req.params.userId;  
+    
+}
+
+exports.passwordReset = async (req,res,next) => {
+
 }
