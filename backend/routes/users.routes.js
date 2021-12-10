@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 
-const {isAuth, isAdmin, getMe, getAll, logIn, register, becomePriviliged, upDateName} = db.users;
+const {isAuth, isAdmin, getMe, getAll, logIn, register, becomePriviliged, upDateName} = require('../controllers/users.controller');
 
 
 router.get('/',isAuth, isAdmin, getAll);
