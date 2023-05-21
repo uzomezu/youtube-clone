@@ -249,8 +249,7 @@ exports.upDateName = async (req,res,next) => {
 // Email Confirmation and Password Reset
 
 exports.emailConfirmation = async (req,res,next) => {
-    const userId = req.params.userId;  
-    
+    // Add auth role to user given temporary JWT data 
 }
 
 exports.passwordReset = async (req,res,next) => {
